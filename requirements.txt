@@ -10,3 +10,4 @@ pandasql==0.7.3
 wheel
 duckdb==0.7.1
 spacy
+xgboost==1.4.2

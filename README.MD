@@ -32,4 +32,14 @@ Supervised learning to predict feature vector -> label.
 Consideration of robustness (stability)
 Generalizability.
 
-# python -m spacy download en_core_web_sm
+```python -m spacy download en_core_web_sm```
+
+```
+model = xgb.XGBClassifier(
+    n_estimators=3,  # Increase the number of trees (default: 100)
+    max_depth=99,       # Increase the maximum depth of each tree (default: 3)
+    learning_rate=0.03, # Increase the learning rate (default: 0.1)
+    subsample=0.7,     # Increase the subsample ratio (default: 1.0)
+    colsample_bytree=0.6,  # Increase the feature subsampling ratio (default: 1.0)
+)
+```
