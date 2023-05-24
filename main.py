@@ -1,4 +1,3 @@
-# Heuristic rules
 import spacy
 import json
 import re

@@ -19,16 +19,18 @@ def tokenize_text(string_input):
     tokens = [token.lemma_ for token in doc]
     return tokens
 
-def generate_embeddings(data):
+def generate_embeddings(data, with_lemma=False):
     embeddings = []
     for dic in data:
         level = LEVEL_MAPPING_DIC[dic["level"]] if "level" in dic.keys() else None
         title = dic["title"] if "title" in dic.keys() else None
 
-        # tokens = tokenize_text(dic["description"].lower())
-        # text_with_sentences = " ".join(tokens).replace(" .", ". ")
-        # doc = nlp(text_with_sentences)  
-        doc = nlp(dic["description"])
+        if with_lemma:
+            tokens = tokenize_text(dic["description"].lower())
+            text_with_sentences = " ".join(tokens).replace(" .", ". ")
+            doc = nlp(text_with_sentences) 
+        else:
+            doc = nlp(dic["description"])
         
         embeddings.append({"level_inf": None, "level": level, "title": title, "desc_text": dic["description"], "doc_vec": doc})
     return embeddings
@@ -72,11 +74,11 @@ def infer_lvl_from_rules(embedding_data):
 def run_xgboost(X_train, X_test, y_train, y_test):
 
     model = xgb.XGBClassifier(
-        n_estimators=2,  # Increase the number of trees (default: 100)
-        max_depth=20,       # Increase the maximum depth of each tree (default: 3)
-        learning_rate=0.03, # Increase the learning rate (default: 0.1)
-        subsample=0.7,     # Increase the subsample ratio (default: 1.0)
-        colsample_bytree=0.6,  # Increase the feature subsampling ratio (default: 1.0)
+        n_estimators=2,  
+        max_depth=20,      
+        learning_rate=0.03, 
+        subsample=0.7,   
+        colsample_bytree=0.6,  
     )
 
     model.fit(X_train, y_train)
