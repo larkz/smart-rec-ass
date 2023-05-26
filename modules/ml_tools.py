@@ -8,25 +8,44 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 import xgboost as xgb
 
-nlp = spacy.load("en_core_web_sm")
+# nlp = spacy.load("en_core_web_sm")
 
 LEVEL_MAPPING_DIC = {'Internship':0, 'Entry Level':1, 'Mid Level':2, 'Senior Level':3}
 INVERT_LVL_DIC = {value: key for key, value in LEVEL_MAPPING_DIC.items()}
 
-def tokenize_text(string_input):
+def load_spacy_model(func):
+    nlp = spacy.load("en_core_web_sm")
+
+    with open("data.json") as f:
+        data = json.load(f)
+    
+    def wrapper(*args, **kwargs):
+        args = [data, nlp]
+        return func(*args, **kwargs)
+    
+    return wrapper
+
+@load_spacy_model
+def process_text(data, nlp):
+    embeddings = generate_embeddings(data, with_lemma=True, nlp = nlp)
+    model_data = [e for e in embeddings if e["level"] is not None]
+    missing_title_data = [e for e in embeddings if e["level"] is None]
+    return embeddings, model_data, missing_title_data
+
+def tokenize_text(string_input, nlp):
     text = re.sub(r'[^a-zA-Z0-9\s.,?!]', '', string_input)
     doc = nlp(text)
     tokens = [token.lemma_ for token in doc]
     return tokens
 
-def generate_embeddings(data, with_lemma=False):
+def generate_embeddings(data, with_lemma=False, nlp=None):
     embeddings = []
     for dic in data:
         level = LEVEL_MAPPING_DIC[dic["level"]] if "level" in dic.keys() else None
         title = dic["title"] if "title" in dic.keys() else None
 
         if with_lemma:
-            tokens = tokenize_text(dic["description"].lower())
+            tokens = tokenize_text(dic["description"].lower(), nlp)
             text_with_sentences = " ".join(tokens).replace(" .", ". ")
             doc = nlp(text_with_sentences) 
         else:

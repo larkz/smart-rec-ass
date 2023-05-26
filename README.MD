@@ -45,7 +45,7 @@ Key pattern detection via regex.
 - Doc2Vec to transform text into feature vector.
 - Supervised learning to predict feature vector -> label.
 
-We run the model hiearchically, heuristics for where it is possible to detect a keyword in the text. Followed by the ML model
+We run the model hiearchically, heuristics for where it is possible to detect a keyword in the text. Followed by the ML model to do supervised learning from a word embedding vector to a class (job seniority level).
 
 ### Heuristics
 
@@ -65,6 +65,10 @@ We first estimate the overall accuracy. That is the coorectly identified labels 
 We should also have other considerations:
 Consideration of robustness (stability)
 Generalizability.
+
+How can we improve?
+- The algorithmbigger corpus
+- Custom corpus
 
 
 ```
