@@ -212,10 +212,14 @@ def run_inference_oos(oos_data, ml_model):
     infer_data_copy = copy.deepcopy(infer_data)
 
     for d in infer_data_copy:
+        
         if d['level_inf'] is None:
             lvl_index = ml_model.predict(np.array([d["doc_vec"].vector]))[0]
             d['level_inf'] = INVERT_LVL_DIC[lvl_index]
-            del d["doc_vec"]
+            
+        # d["doc_vec"] = d["doc_vec"].to_dict()
+        if d['level'] == None:
+            del d['level']
+        del d['doc_vec']
 
-    
     return infer_data_copy
