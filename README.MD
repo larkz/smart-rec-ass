@@ -1,4 +1,4 @@
-### Augment job information
+## Augment job information
 Given the list of jobs (title, description and seniority level),
 but some of the jobs are missing the seniority level.
 
@@ -8,18 +8,21 @@ Extra:
 
 ## 1. Explain the choice of language / technology stack.
 
-We use Python to perform the prediction model (X -> Y), where X (description) are features in the dataset and Y (seniority + title) are the features.
+We have chosen Python as the language for developing the prediction model (X -> Y), where X represents the description features in the dataset and Y represents the seniority and title features.
 
-To address this classification problem we use a combination of the python libraries.
-- word heuristics (regex)
-- NLP (spacy Doc2Vec)
-- supervised ML (xgboost)
+To address this classification problem, we utilize the following Python libraries:
 
-The libraries used are in the `requirements.txt` file.
+- Word heuristics (regex)
+- Natural Language Processing (NLP) with Spacy's Doc2Vec
+- Supervised Machine Learning with XGBoost
 
-To download the trained word embedding for spacy:
+The required libraries are listed in the `requirements.txt` file.
 
-```python -m spacy download en_core_web_sm```
+To download the trained word embedding for Spacy, run the following command:
+
+```bash
+python -m spacy download en_core_web_sm
+```
 
 ### Model Serving
 
@@ -39,37 +42,15 @@ Goal: predict seniority level
 
 ### Heuristic model
 
-Key pattern detection via regex.
+We employ key pattern detection using regular expressions (regex) to implement a heuristic model.
 
 ### ML Model
-- Doc2Vec to transform text into feature vector.
-- Supervised learning to predict feature vector -> label.
+- Doc2Vec: We utilize Spacy's Doc2Vec to transform text into a feature vector.
+- Supervised Learning: The ML model performs supervised learning to predict the feature vector and corresponding label.
 
-We run the model hiearchically, heuristics for where it is possible to detect a keyword in the text. Followed by the ML model to do supervised learning from a word embedding vector to a class (job seniority level).
+We run the model hierarchically, applying heuristics where possible to detect specific keywords in the text. Subsequently, the ML model performs supervised learning from a word embedding vector to classify the job seniority level.
 
-### Heuristics
-
-We use basic heuristic rules in the `heuristic_rules(string_input)` function to apply basic rules for the clasification process. For example if the job description has "senior" or "vp" contained in the string, then the seniority level of the job is very likely a senior role. We use regex implement this categorization.
-
-### Word Embedding
-
-We apply the Spacy Doc2Vec word embedding to map the string in the description property to a numeric vector, via the `en_core_web_sm` word embedding.
-
-### Supervised learning
-
-
-## 3. Estimate quality of the result.
-
-We first estimate the overall accuracy. That is the coorectly identified labels via the algorithm,
-
-We should also have other considerations:
-Consideration of robustness (stability)
-Generalizability.
-
-How can we improve?
-- The algorithmbigger corpus
-- Custom corpus
-
+We apply `XGBClassifier` to perform the supervised learning.
 
 ```
 model = xgb.XGBClassifier(
@@ -80,5 +61,37 @@ model = xgb.XGBClassifier(
     colsample_bytree=0.6,  
 )
 ```
+
+### Heuristics
+
+We implement basic heuristic rules within the `heuristic_rules(string_input)` function to support the classification process. For example, if the job description contains the terms "senior" or "vp," it is highly likely that the seniority level of the job is senior. We employ regex to implement these categorizations.
+
+### Word Embedding
+
+We utilize Spacy's Doc2Vec word embedding to map the description property to a numeric vector using the `en_core_web_md` word embedding. The model is trained using a shallow parser, a POS tagger, and word vectors trained on Common Crawl data. These include tokenization, part-of-speech (POS) tagging, dependency parsing, named entity recognition (NER), and more.
+
+Other libraries can include,
+- `en_core_web_sm`
+- `en_core_web_lg`
+- `en_core_web_trf`
+
+### Supervised learning
+
+
+## 3. Estimate quality of the result.
+
+We first estimate the overall accuracy by evaluating the correctly identified labels through the algorithm.
+
+Other considerations include:
+
+- Robustness and Stability
+- Generalizability
+
+To improve the performance of the algorithm, the following steps can be taken:
+
+- Increase the size of the training corpus.
+- Utilize a custom corpus tailored to the specific domain.
+
+### Test Driven Development
 
 
