@@ -195,31 +195,53 @@ def run_xgboost_pipeline(in_samp_data):
 
     return model, accuracy_tr, accuracy_test
 
-def in_sample_accuracy(in_samp_data, model):
-    # In sample accuracy check
-    for d in in_samp_data:
-        if d['level_inf'] is None:
-            d['level_inf'] = model.predict(np.array([d["doc_vec"].vector]))[0]
-
-    # hiearchical model accuracy on in sample data
-    data_insamp_correct = [i for i in in_samp_data if i["level"] == i["level_inf"]]
+def in_sample_accuracy(data):
+    """
+    Calculate the in-sample accuracy of a hierarchical model on the provided data.
     
-    return len(data_insamp_correct)/len(in_samp_data)
+    Args:
+        data (list): List of dictionaries containing the data with json data representation.
+    
+    Returns:
+        float: In-sample accuracy as a ratio of correctly classified samples to total samples.
+    """
+    data_insamp_correct = [i for i in data if i["level"] == i["level_inf"]]
+    
+    return len(data_insamp_correct)/len(data)
 
 def run_inference_oos(oos_data, ml_model):
+    """
+    Run out-of-sample inference using a machine learning model on the provided data.
     
-    infer_data = infer_lvl_from_rules(oos_data)
-    infer_data_copy = copy.deepcopy(infer_data)
+    Args:
+        oos_data (list): List of dictionaries containing the data to be inferred with 'level_inf' key.
+        ml_model: Trained machine learning model for prediction.
+        to_json (bool): Flag indicating whether to convert the inference results suitable for JSON format.
+    
+    Returns:
+        list: List of dictionaries containing the inferred data.
+    """
+    infer_data = copy.deepcopy(oos_data)
 
-    for d in infer_data_copy:
-        
+    for d in infer_data:
+        d['level_inf'] == None
+
+    infer_data = infer_lvl_from_rules(infer_data)
+
+    for d in infer_data:
         if d['level_inf'] is None:
-            lvl_index = ml_model.predict(np.array([d["doc_vec"].vector]))[0]
-            d['level_inf'] = INVERT_LVL_DIC[lvl_index]
+            d['level_inf'] = ml_model.predict(np.array([d["doc_vec"].vector]))[0]
             
-        # d["doc_vec"] = d["doc_vec"].to_dict()
+    return infer_data
+
+def prepare_json(infer_data):
+    infer_data_copy = copy.deepcopy(infer_data)
+    for d in infer_data_copy:
+        lvl_index = d['level_inf'] 
+        d['level_inf'] = INVERT_LVL_DIC[lvl_index]
+                        
         if d['level'] == None:
             del d['level']
         del d['doc_vec']
-
+    
     return infer_data_copy

@@ -94,4 +94,8 @@ To improve the performance of the algorithm, the following steps can be taken:
 
 ### Test Driven Development
 
+To run unit tests
 
+```
+pytest tests/unit_tests.py
+```

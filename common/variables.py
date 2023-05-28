@@ -11,3 +11,5 @@ MAX_DEPTH = 20
 LR = 0.03
 SUBSAMPLE = 0.7
 COLSAMP = 0.6
+
+OUTPUT_FILEPATH = 'output/inference_output.json'
